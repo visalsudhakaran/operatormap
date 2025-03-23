@@ -24,37 +24,32 @@
     <script>
         let map;
         let markers = [];
-        let serviceProviders = [];
+        
+        let serviceProviders = [
+            { name: "Summit Networks", pincode: 680862, location: "Guruvayur", connections: 187, serviceableAreas: [680861, 680863, 680864, 680865, 680866] },
+            { name: "Infinity Broadband", pincode: 680862, location: "Vatanappally", connections: 15, serviceableAreas: [680860, 680861, 680863, 680864, 680865] },
+            { name: "OmniNet", pincode: 680643, location: "Anthikkad", connections: 197, serviceableAreas: [680641, 680642, 680644, 680645, 680646] },
+            { name: "SwiftFiber", pincode: 680831, location: "Ollur", connections: 110, serviceableAreas: [680829, 680830, 680832, 680833, 680834] },
+            { name: "SwiftFiber", pincode: 680852, location: "Peringottukara", connections: 312, serviceableAreas: [680850, 680851, 680853, 680854, 680855] }
+        ];
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 10.002, lng: 76.002 },
                 zoom: 12,
             });
-
-            // Load business partners from CSV file
-            fetch('networking_companies_kerala.csv')
-                .then(response => response.text())
-                .then(data => {
-                    let rows = data.split("\n").slice(1);
-                    rows.forEach(row => {
-                        let [name, pincode, location, city, phone] = row.split(",");
-                        let connections = Math.floor(Math.random() * 501); // Random number between 0-500
-                        serviceProviders.push({ name, pincode, location, city, phone, connections });
-                    });
-                });
         }
 
         function findServiceProviders() {
             let query = document.getElementById("searchBox").value.trim();
             if (!query) return alert("Please enter a pincode");
             
-            let filteredProviders = serviceProviders.filter(provider => provider.pincode === query);
+            let filteredProviders = serviceProviders.filter(provider => provider.pincode == query || provider.serviceableAreas.includes(parseInt(query)));
             filteredProviders.sort((a, b) => b.connections - a.connections); // Sort by number of connections (descending)
             
             if (filteredProviders.length === 0) {
                 alert("No exact match found. Listing nearest operators instead.");
-                filteredProviders = serviceProviders.filter(provider => provider.pincode.startsWith(query.substring(0, 4)))
+                filteredProviders = serviceProviders.filter(provider => String(provider.pincode).startsWith(query.substring(0, 4)))
                                                    .sort((a, b) => b.connections - a.connections);
             }
             displayResults(filteredProviders);
@@ -68,9 +63,8 @@
                     <th>Name</th>
                     <th>Pincode</th>
                     <th>Location</th>
-                    <th>City</th>
-                    <th>Phone</th>
                     <th>Connections</th>
+                    <th>Serviceable Areas</th>
                 </tr>`;
             
             providers.forEach(provider => {
@@ -78,9 +72,8 @@
                     <td>${provider.name}</td>
                     <td>${provider.pincode}</td>
                     <td>${provider.location}</td>
-                    <td>${provider.city}</td>
-                    <td>${provider.phone}</td>
                     <td>${provider.connections}</td>
+                    <td>${provider.serviceableAreas.join(', ')}</td>
                 </tr>`;
             });
             table += "</table>";
