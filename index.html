@@ -23,30 +23,19 @@
         import serviceProviders from './serviceProviders.js';
 
         function findServiceProviders() {
-    let query = document.getElementById("searchBox").value.trim();
-    if (!query) return alert("Please enter a valid pincode");
-
-    let queryPincode = parseInt(query);
-
-    // Filter providers who have the searched pincode in their serviceable areas
-    let filteredProviders = serviceProviders
-        .filter(provider => provider.serviceableAreas.hasOwnProperty(queryPincode))
-        .map(provider => ({
-            ...provider,
-            connections: provider.serviceableAreas[queryPincode] // Get connection count for this pincode
-        }))
-        .sort((a, b) => b.connections - a.connections); // Sort by number of connections (descending)
-
-    if (filteredProviders.length === 0) {
-        alert("No exact match found. Showing nearest operators.");
-        filteredProviders = serviceProviders
-            .filter(provider => String(provider.pincode).startsWith(query.substring(0, 4)))
-            .sort((a, b) => b.connections - a.connections);
-    }
-
-    displayResults(filteredProviders);
-}
-
+            let query = document.getElementById("searchBox").value.trim();
+            if (!query) return alert("Please enter a pincode");
+            
+            let filteredProviders = serviceProviders.filter(provider => provider.pincode == query || provider.serviceableAreas.includes(parseInt(query)));
+            filteredProviders.sort((a, b) => b.connections - a.connections); // Sort by number of connections (descending)
+            
+            if (filteredProviders.length === 0) {
+                alert("No exact match found. Listing nearest operators instead.");
+                filteredProviders = serviceProviders.filter(provider => String(provider.pincode).startsWith(query.substring(0, 4)))
+                                                   .sort((a, b) => b.connections - a.connections);
+            }
+            displayResults(filteredProviders);
+        }
 
         function displayResults(providers) {
             let resultsDiv = document.getElementById("results");
