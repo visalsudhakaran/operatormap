@@ -56,7 +56,7 @@ button:hover {
 #results {
     margin-top: 20px;
     width: 80%;
-    max-width: 600px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     background: rgba(255, 255, 255, 0.2);
@@ -83,6 +83,32 @@ th {
     font-weight: bold;
 }
 
+/* Ensure column widths are properly distributed */
+th:nth-child(1), td:nth-child(1) { width: 20%; } /* Name */
+th:nth-child(2), td:nth-child(2) { width: 10%; } /* Pincode */
+th:nth-child(3), td:nth-child(3) { width: 15%; } /* Location */
+th:nth-child(4), td:nth-child(4) { width: 15%; } /* Connections */
+th:nth-child(5), td:nth-child(5) { width: 20%; } /* Total Connections */
+th:nth-child(6), td:nth-child(6) { width: 15%; } /* Phone */
+th:nth-child(7), td:nth-child(7) { width: 30%; } /* Serviceable Areas */
+
+/* Hover effect */
 tr:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #searchBox, button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
 }
