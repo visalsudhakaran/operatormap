@@ -14,6 +14,9 @@ const serviceProviders = [
 // Generate 90 more providers dynamically
 for (let i = 11; i <= 100; i++) {
     let pincode = 680000 + i;
+    let totalConnections = Math.floor(Math.random() * 5000); // Random from 0 to 5000
+    totalConnections = totalConnections > 1500 ? "1500+" : totalConnections; // Limit to 1500+
+
     serviceProviders.push({
         name: `Provider ${i}`,
         pincode: pincode,
@@ -25,7 +28,8 @@ for (let i = 11; i <= 100; i++) {
             pincode - 1, 
             pincode - 2, 
             pincode + 3
-        ]
+        ],
+        totalConnections: totalConnections
     });
 }
 
