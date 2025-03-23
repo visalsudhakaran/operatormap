@@ -19,7 +19,7 @@
     <button onclick="findServiceProviders()">Search</button>
     <div id="results"></div>
     
-    <script>
+    <script type="module">
         import serviceProviders from './serviceProviders.js';
 
         function findServiceProviders() {
@@ -61,6 +61,8 @@
             table += "</table>";
             resultsDiv.innerHTML += table;
         }
+
+        window.findServiceProviders = findServiceProviders;
     </script>
 </body>
 </html>
