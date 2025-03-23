@@ -12,52 +12,52 @@
     <button onclick="findServiceProviders()">Search</button>
     <div id="results"></div>
     
-    <script type="module">
-        import serviceProviders from './serviceProviders.js';
+   <script type="module">
+    import serviceProviders from './serviceProviders.js';
 
-        function findServiceProviders() {
-            let query = document.getElementById("searchBox").value.trim();
-            if (!query) return alert("Please enter a pincode");
-            
-            let filteredProviders = serviceProviders.filter(provider => provider.pincode == query || provider.serviceableAreas.includes(parseInt(query)));
-            filteredProviders.sort((a, b) => b.connections - a.connections); // Sort by number of connections (descending)
-            
-            if (filteredProviders.length === 0) {
-                alert("No exact match found. Listing nearest operators instead.");
-                filteredProviders = serviceProviders.filter(provider => String(provider.pincode).startsWith(query.substring(0, 4)))
-                                                   .sort((a, b) => b.connections - a.connections);
-            }
-            displayResults(filteredProviders);
+    function findServiceProviders() {
+        let query = document.getElementById("searchBox").value.trim();
+        if (!query) return alert("Please enter a pincode");
+        
+        let filteredProviders = serviceProviders.filter(provider => provider.pincode == query || provider.serviceableAreas.includes(parseInt(query)));
+        filteredProviders.sort((a, b) => b.connections - a.connections); // Sort by number of connections (descending)
+        
+        if (filteredProviders.length === 0) {
+            alert("No exact match found. Listing nearest operators instead.");
+            filteredProviders = serviceProviders.filter(provider => String(provider.pincode).startsWith(query.substring(0, 4)))
+                                               .sort((a, b) => b.connections - a.connections);
         }
+        displayResults(filteredProviders);
+    }
 
-        function displayResults(providers) {
-            let resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "<h3>Available Service Providers</h3>";
-            let table = `<table>
-                <tr>
-                    <th>Name</th>
-                    <th>Pincode</th>
-                    <th>Location</th>
-                    <th>Connections</th>
-                    <th>Serviceable Areas</th>
-                    <th>Phone</th>
-                </tr>`;
-            
-            providers.forEach(provider => {
-                table += `<tr>
-                    <td>${provider.name}</td>
-                    <td>${provider.pincode}</td>
-                    <td>${provider.location}</td>
-                    <td>${provider.totalConnections}</td>
-                    <td>${provider.serviceableAreas.join(', ')}</td>
-                    <td>${provider.phone}</td>
-                </tr>`;
-            });
-            table += "</table>";
-            resultsDiv.innerHTML += table;
-        }
+    function displayResults(providers) {
+        let resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "<h3>Available Service Providers</h3>";
+        let table = `<table>
+            <tr>
+                <th>Name</th>
+                <th>Pincode</th>
+                <th>Location</th>
+                <th>Connections</th>
+                <th>Serviceable Areas</th>
+                <th>Phone</th>
+            </tr>`;
+        
+        providers.forEach(provider => {
+            table += `<tr>
+                <td>${provider.name}</td>
+                <td>${provider.pincode}</td>
+                <td>${provider.location}</td>
+                <td>${provider.connections}</td> <!-- FIXED: Using 'connections' instead of 'totalConnections' -->
+                <td>${provider.serviceableAreas.join(', ')}</td>
+                <td>${provider.phone}</td>
+            </tr>`;
+        });
+        table += "</table>";
+        resultsDiv.innerHTML += table;
+    }
 
-        window.findServiceProviders = findServiceProviders;
-    </script>
-</body>
+    window.findServiceProviders = findServiceProviders;
+</script>
+
 </html>
