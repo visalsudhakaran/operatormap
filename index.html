@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Area Finder</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #map { height: 500px; width: 100%; }
+        #searchBox { margin: 10px; padding: 10px; width: 80%; max-width: 400px; }
+        button { padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Find Service Providers in Your Area</h2>
+    <input type="text" id="searchBox" placeholder="Enter Pincode, Landmark, or Location">
+    <button onclick="findServiceProviders()">Search</button>
+    <div id="map"></div>
+    
+    <script>
+        let map;
+        let markers = [];
+        let serviceProviders = [];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 10.002, lng: 76.002 },
+                zoom: 12,
+            });
+
+            // Load business partners from CSV file
+            fetch('networking_companies_kerala.csv')
+                .then(response => response.text())
+                .then(data => {
+                    let rows = data.split("\n").slice(1);
+                    rows.forEach(row => {
+                        let [name, pincode, location] = row.split(",");
+                        geocodeLocation(name, pincode, location);
+                    });
+                });
+        }
+
+        function geocodeLocation(name, pincode, location) {
+            let geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: location }, function(results, status) {
+                if (status === "OK") {
+                    let latLng = results[0].geometry.location;
+                    serviceProviders.push({ name, lat: latLng.lat(), lng: latLng.lng() });
+                }
+            });
+        }
+
+        function findServiceProviders() {
+            let query = document.getElementById("searchBox").value;
+            if (!query) return alert("Please enter a location");
+            
+            let geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: query }, function(results, status) {
+                if (status === "OK") {
+                    let location = results[0].geometry.location;
+                    map.setCenter(location);
+                    map.setZoom(14);
+                    
+                    markers.forEach(marker => marker.setMap(null));
+                    markers = [];
+                    
+                    serviceProviders.forEach(provider => {
+                        let distance = google.maps.geometry.spherical.computeDistanceBetween(
+                            new google.maps.LatLng(provider.lat, provider.lng), location
+                        );
+                        
+                        if (distance < 5000) { // Approx 5km radius filter
+                            let marker = new google.maps.Marker({
+                                position: { lat: provider.lat, lng: provider.lng },
+                                map: map,
+                                title: provider.name
+                            });
+                            markers.push(marker);
+                        }
+                    });
+                } else {
+                    alert("Location not found");
+                }
+            });
+        }
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap" async defer></script>
+</body>
+</html>
